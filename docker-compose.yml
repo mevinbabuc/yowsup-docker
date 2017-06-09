@@ -1,0 +1,16 @@
+version: '2'
+services:
+  whatsapp:
+    image: masood09/django-development:0.1.0
+    volumes:
+      - .:/application
+      - ~/.ssh:/root/.ssh
+      - app-python-site-packages:/usr/local/lib/python3.4/site-packages
+      - app-usr-local-bin:/usr/local/bin
+    ports:
+      - 8000:8000
+volumes:
+  app-python-site-packages:
+    driver: local
+  app-usr-local-bin:
+    driver: local
