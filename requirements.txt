@@ -25,3 +25,4 @@ typing==3.6.1
 wcwidth==0.1.7
 yowsup2==2.5.2
 duckduckgo3
+python-jenkins==0.4.14
