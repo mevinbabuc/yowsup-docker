@@ -13,6 +13,7 @@ class WhatappBotSetRemider(object):
         self.scheduled_messages = db.scheduled_messages
 
     def set_reminder(self, phone, msg):
+        self.now = datetime.now()
         if msg.startswith('remind me'):
             message, scheduled_datetime = self.parse_message(msg)
 
@@ -24,8 +25,16 @@ class WhatappBotSetRemider(object):
                 return scheduled_datetime
 
     def parse_message(self, msg):
+        self.now = datetime.now()
         if "at" not in msg:
-            msg += " at 9:00 am"
+            checkaftr = re.search("after.(\d).min.", msg)
+            if checkaftr:
+                scheduled = self.now + timedelta(mins=checkaftr.groups(0))
+                after_i = msg.index("after")
+                msg = msg[:after_i] + "today at %s" % datetime.strftime(scheduled,"%I:%M %p")
+
+            else:
+                msg += " at 9:00 am"
         st = re.search("(\d+):(\d+)\s*([aApP][mM])", msg)
         if not st:
             st = re.search("(\d+)\s*([aApP][mM])", msg)
