@@ -13,6 +13,7 @@ class WhatappBotSetRemider(object):
         self.scheduled_messages = db.scheduled_messages
 
     def set_reminder(self, phone, msg):
+        self.now = datetime.now()
         if msg.startswith('remind me'):
             message, scheduled_datetime = self.parse_message(msg)
 
@@ -20,16 +21,25 @@ class WhatappBotSetRemider(object):
                 print("GOT message here", message)
                 self.scheduled_messages.insert_one({"phone": phone, "message": message, "date": scheduled_datetime})
                 return "{0} is scheduled for {1}".format(message, scheduled_datetime)
+            elif scheduled_datetime:
+                return scheduled_datetime
 
     def parse_message(self, msg):
+        self.now = datetime.now()
         if "at" not in msg:
-            msg += " at 9:00 am"
+            checkaftr = re.search("after.(\d).min.", msg)
+            if checkaftr:
+                scheduled = self.now + timedelta(mins=checkaftr.groups(0))
+                after_i = msg.index("after")
+                msg = msg[:after_i] + "today at %s" % datetime.strftime(scheduled,"%I:%M %p")
+
+            else:
+                msg += " at 9:00 am"
         st = re.search("(\d+):(\d+)\s*([aApP][mM])", msg)
         if not st:
             st = re.search("(\d+)\s*([aApP][mM])", msg)
 
         st = st.groups(0)
-        now = self.now
         slice_message_index = 0
 
         if "today" in msg:
@@ -81,11 +91,8 @@ class WhatappBotSetRemider(object):
     def get_messages(self):
         return self.scheduled_messages.find({"date":{"$gte":self.now,"$lte":self.now + timedelta(minutes=5)}})
 
+    def expire_reminder(self, msg):
+        print("Expiring reminders")
 
-
-# message = raw_input("test message: ")
-# bot = WhatappBotSetRemider()
-# print("setting reminder")
-# print(bot.set_reminder("+91-9742544667", message))
-# for aa in bot.get_messages():
-#     print aa
+        self.scheduled_messages.delete_one({'_id': msg['_id']})
+        print("msg deleted ", msg)

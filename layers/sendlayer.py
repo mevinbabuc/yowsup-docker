@@ -8,6 +8,7 @@ from yowsup.common.tools import Jid
 from nltk.chat.rude import rude_chatbot
 
 from .remindme import WhatappBotSetRemider
+from .ducked import get_results
 
 import logging
 logger = logging.getLogger(__name__)
@@ -16,7 +17,8 @@ logger = logging.getLogger(__name__)
 def construct_reply(recipient, message):
     phone = recipient.split('@')[0]
     rem = WhatappBotSetRemider()
-    reply = rem.set_reminder(phone, message)
+
+    reply = rem.set_reminder(phone, message) or get_results(message)
 
     if reply:
         return reply
@@ -27,6 +29,11 @@ class SendLayer(YowInterfaceLayer):
 
     def __init__(self):
         super(SendLayer, self).__init__()
+
+    def send_message(self, phone, message):
+
+        entity = TextMessageProtocolEntity(message, to=phone)
+        self.toLower(entity)
 
     @ProtocolEntityCallback("success")
     def onSuccess(self, successProtocolEntity):
