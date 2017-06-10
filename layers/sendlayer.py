@@ -28,6 +28,11 @@ class SendLayer(YowInterfaceLayer):
     def __init__(self):
         super(SendLayer, self).__init__()
 
+    def send_message(self, phone, message):
+
+        entity = TextMessageProtocolEntity(message, to=phone)
+        self.toLower(entity)
+
     @ProtocolEntityCallback("success")
     def onSuccess(self, successProtocolEntity):
 
