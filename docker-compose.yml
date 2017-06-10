@@ -7,8 +7,10 @@ services:
       - ~/.ssh:/root/.ssh
       - app-python-site-packages:/usr/local/lib/python3.4/site-packages
       - app-usr-local-bin:/usr/local/bin
-    ports:
-      - 8000:8000
+    links:
+        - mongodb
+  mongodb:
+    image: mongo:latest
 volumes:
   app-python-site-packages:
     driver: local

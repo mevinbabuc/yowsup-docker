@@ -7,12 +7,19 @@ from yowsup.common.tools import Jid
 
 from nltk.chat.rude import rude_chatbot
 
+from .remindme import WhatappBotSetRemider
+
 import logging
 logger = logging.getLogger(__name__)
 
 
 def construct_reply(recipient, message):
-    pass
+    phone = recipient.split('@')[0]
+    rem = WhatappBotSetRemider()
+    reply = rem.set_reminder(phone, message)
+
+    if reply:
+        return reply
 
 
 class SendLayer(YowInterfaceLayer):

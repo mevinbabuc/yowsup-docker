@@ -1,5 +1,6 @@
-From frolvlad/alpine-python2
-RUN apk --update add gcc python-dev musl-dev
-ADD requirements.txt /app/requirements.txt
-RUN pip install -r /app/requirements.txt
-ENTRYPOINT ["yowsup-cli"]
+FROM masood09/django-development:0.1.0
+ENV HOME /root
+ENV APP_HOME /application/
+ADD requirements.txt $APP_HOME
+RUN pip install -r requirements.txt
+ADD . $APP_HOME
